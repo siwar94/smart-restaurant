@@ -2,9 +2,14 @@ from fastapi import FastAPI
 from sqlalchemy import text
 
 from app.database.session import engine
-from app import models  # <-- ajouté pour valider les modèles
+from app import models
+from app.routers import auth, users, tables
 
 app = FastAPI(title="Smart Restaurant Order System API")
+
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(tables.router)
 
 
 @app.get("/")
