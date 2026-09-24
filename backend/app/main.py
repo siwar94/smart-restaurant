@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from sqlalchemy import text
 
 from app.database.session import engine
+from app import models  # <-- ajouté pour valider les modèles
 
 app = FastAPI(title="Smart Restaurant Order System API")
 
