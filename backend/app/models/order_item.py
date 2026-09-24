@@ -18,3 +18,11 @@ class OrderItem(Base):
 
     order = relationship("Order", back_populates="items")
     menu_item = relationship("MenuItem", back_populates="order_items")
+
+    @property
+    def menu_item_name(self) -> str:
+        return self.menu_item.name if self.menu_item else ""
+
+    @property
+    def subtotal(self):
+        return self.quantity * self.unit_price

@@ -3,7 +3,7 @@ from sqlalchemy import text
 
 from app.database.session import engine
 from app import models
-from app.routers import auth, users, tables, categories, menu_items
+from app.routers import auth, users, tables, categories, menu_items, orders
 
 app = FastAPI(title="Smart Restaurant Order System API")
 
@@ -12,6 +12,7 @@ app.include_router(users.router)
 app.include_router(tables.router)
 app.include_router(categories.router)
 app.include_router(menu_items.router)
+app.include_router(orders.router)
 
 
 @app.get("/")
