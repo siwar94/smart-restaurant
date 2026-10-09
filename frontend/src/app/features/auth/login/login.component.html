@@ -1,0 +1,45 @@
+<div class="login-page">
+
+  <div class="login-side">
+    <div class="login-side-content">
+      <div class="brand-mark-lg">🍽️</div>
+      <span class="mark">Smart Restaurant</span>
+      <p class="tagline">La salle et la cuisine, sur le même ticket.</p>
+
+      <ul class="login-features">
+        <li><span>🪑</span> Gestion des tables en temps réel</li>
+        <li><span>👨‍🍳</span> Suivi cuisine instantané</li>
+        <li><span>📊</span> Statistiques et prévisions IA</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="login-panel">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form card">
+
+      <div class="login-form-icon">🔐</div>
+      <h1>Connexion</h1>
+      <p class="subtitle">Accédez à votre espace selon votre rôle.</p>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" id="email" name="email" formControlName="email" autocomplete="email" placeholder="vous@restaurant.com" />
+      </label>
+
+      <label class="field">
+        <span>Mot de passe</span>
+        <input type="password" id="password" name="password" formControlName="password" autocomplete="current-password" placeholder="••••••••" />
+      </label>
+
+      @if (errorMessage()) {
+        <p class="error">⚠️ {{ errorMessage() }}</p>
+      }
+
+      <button type="submit" class="btn btn-primary login-submit" [disabled]="form.invalid || loading()">
+        {{ loading() ? 'Connexion...' : 'Se connecter' }}
+      </button>
+
+    </form>
+  </div>
+
+</div>

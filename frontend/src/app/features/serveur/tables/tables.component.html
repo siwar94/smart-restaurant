@@ -1,0 +1,38 @@
+
+<div class="page-header">
+  <div>
+    <h1>Sélectionner une table</h1>
+    <p class="page-subtitle">Choisis une table pour démarrer une commande</p>
+  </div>
+</div>
+
+@if (loading()) {
+
+  <div class="dash-loading">
+    <div class="spinner"></div>
+    <p>Chargement des tables...</p>
+  </div>
+
+} @else {
+
+  <div class="table-grid">
+    @for (table of tables(); track table.id) {
+      <div class="table-card" [class.occupied]="table.status === TableStatus.OCCUPIED">
+        <button class="table-select" (click)="selectTable(table)">
+          <div class="table-icon">🪑</div>
+          <span class="table-number">Table {{ table.number }}</span>
+          <span class="badge" [class.badge-free]="table.status === TableStatus.FREE" [class.badge-occupied]="table.status === TableStatus.OCCUPIED">
+            {{ table.status === TableStatus.FREE ? 'Libre' : 'Occupée' }}
+          </span>
+        </button>
+
+        @if (table.status === TableStatus.OCCUPIED) {
+          <button class="btn btn-ghost free-btn" (click)="freeTable(table, $event)">
+            Libérer la table
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+}

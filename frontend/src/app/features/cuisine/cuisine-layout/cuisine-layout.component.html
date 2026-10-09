@@ -1,0 +1,50 @@
+<div class="app-shell">
+  <aside class="app-sidebar" [class.is-open]="sidebarOpen">
+    <div class="sidebar-brand">
+      <div class="brand-mark">🍽️</div>
+      <div class="brand-copy">
+        <strong>Smart Restaurant</strong>
+        <small>Espace Cuisine</small>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-group">
+        <div class="sidebar-link-list">
+          <a routerLink="/cuisine/orders" routerLinkActive="is-active" class="sidebar-link">
+            <span class="icon">👨‍🍳</span><span>Commandes</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar">CU</div>
+      <div class="sidebar-user-copy">
+        <strong>Cuisine</strong>
+        <small>Connecté</small>
+      </div>
+    </div>
+  </aside>
+
+  @if (sidebarOpen) {
+    <button class="sidebar-scrim" (click)="sidebarOpen = false"></button>
+  }
+
+  <div class="app-main">
+    <header class="app-topbar">
+      <div class="topbar-leading">
+        <button class="mobile-menu-button btn btn-ghost" (click)="sidebarOpen = true">☰</button>
+        <span class="topbar-title">Cuisine</span>
+      </div>
+      <div class="topbar-actions">
+        <span class="topbar-status"><span></span>En service</span>
+        <button class="btn btn-ghost" (click)="logout()">Déconnexion</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

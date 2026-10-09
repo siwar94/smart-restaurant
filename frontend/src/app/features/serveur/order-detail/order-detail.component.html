@@ -1,0 +1,49 @@
+<a routerLink="/serveur/orders" class="back-link">← Retour aux commandes</a>
+
+@if (order(); as o) {
+
+  <div class="page-header">
+    <h1>Commande #{{ o.id }} — Table {{ o.table_id }}</h1>
+    <span class="badge" [class]="statusClass(o.status)">{{ statusLabel(o.status) }}</span>
+  </div>
+
+  <div class="card items-card">
+    <ul class="items-list">
+      @for (item of o.items; track item.id) {
+        <li>
+          <span>{{ item.quantity }} × {{ item.menu_item_name }}</span>
+          <span>{{ item.subtotal | number:'1.2-2' }} DT</span>
+        </li>
+      }
+    </ul>
+
+    <div class="total-row">
+      <span>Total</span>
+      <span>{{ o.total | number:'1.2-2' }} DT</span>
+    </div>
+  </div>
+
+  <div class="actions-row">
+
+    @if (o.status === OrderStatus.NEW) {
+      <a [routerLink]="['/serveur/orders', o.id, 'edit']" class="btn btn-ghost">
+        ✏️ Modifier la commande
+      </a>
+      <button type="button" class="btn btn-danger" (click)="cancelOrder()">
+        ✕ Annuler la commande
+      </button>
+    } @else if (o.status !== OrderStatus.CANCELLED) {
+      <span class="locked-notice">
+        🔒 Impossible de modifier — la cuisine a déjà commencé la préparation
+      </span>
+    }
+
+    @if (o.status === OrderStatus.READY) {
+      <button type="button" class="btn btn-primary" (click)="markServed()">
+        Marquer comme servie
+      </button>
+    }
+
+  </div>
+
+}

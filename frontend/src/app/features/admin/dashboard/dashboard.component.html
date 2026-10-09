@@ -1,0 +1,159 @@
+@if (loading()) {
+
+  <div class="dash-loading">
+    <div class="spinner"></div>
+    <p>Chargement du dashboard...</p>
+  </div>
+
+} @else {
+
+  @if (data(); as d) {
+
+    <div class="page-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p class="page-subtitle">Vue d'ensemble de l'activité du restaurant aujourd'hui</p>
+      </div>
+      <span class="topbar-status"><span></span>Mis à jour en continu</span>
+    </div>
+
+    <!-- KPI -->
+    <section class="kpi-grid">
+
+      <div class="kpi-card">
+        <div class="kpi-icon">🧾</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ d.summary.orders_today }}</span>
+          <span class="kpi-label">Commandes aujourd'hui</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">⏳</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ d.summary.orders_in_progress }}</span>
+          <span class="kpi-label">En cours</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ d.summary.orders_ready }}</span>
+          <span class="kpi-label">Prêtes</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">🍽️</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ d.summary.orders_served_today }}</span>
+          <span class="kpi-label">Servies aujourd'hui</span>
+        </div>
+      </div>
+
+      <div class="kpi-card accent">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ d.summary.revenue_today | number:'1.2-2' }} DT</span>
+          <span class="kpi-label">Chiffre d'affaires</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">🪑</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ d.summary.occupied_tables }}/{{ d.summary.total_tables }}</span>
+          <span class="kpi-label">Tables occupées</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ formatMinutes(d.preparation.average_preparation_seconds) }}</span>
+          <span class="kpi-label">Temps moyen préparation</span>
+        </div>
+      </div>
+
+    </section>
+
+    <div class="dash-columns">
+
+      <!-- Plats les plus commandés -->
+      <section class="card top-items">
+        <h2>🔥 Plats les plus commandés</h2>
+
+        @if (d.top_items.length === 0) {
+          <p class="empty-hint">Pas encore de commandes servies aujourd'hui.</p>
+        } @else {
+          <div class="rank-list">
+            @for (item of d.top_items; track item.menu_item_id; let i = $index) {
+              <div class="rank-row">
+                <span class="rank-badge" [class.rank-first]="i === 0">{{ i + 1 }}</span>
+                <div class="rank-info">
+                  <span class="rank-name">{{ item.name }}</span>
+                  <div class="rank-bar-track">
+                    <div class="rank-bar" [style.width]="shareWidth(item.total_quantity, d.top_items)"></div>
+                  </div>
+                </div>
+                <div class="rank-figures">
+                  <span class="rank-qty">{{ item.total_quantity }}×</span>
+                  <span class="rank-revenue">{{ item.total_revenue | number:'1.2-2' }} DT</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Prévision de demande -->
+      <section class="card forecast-block">
+        <h2>🔮 Prévision de demande</h2>
+        @if (forecast(); as f) {
+          <span class="forecast-date">{{ f.date }}</span>
+        }
+
+        @if (forecastUnavailable()) {
+
+          <div class="forecast-empty">
+            <span class="forecast-empty-icon">🤖</span>
+            <p>Le modèle de prévision n'est pas encore entraîné.</p>
+            <code>scripts/train_demand_model.py</code>
+          </div>
+
+        } @else {
+
+          @if (forecast(); as f) {
+
+            @if (f.items.length === 0) {
+              <div class="forecast-empty">
+                <span class="forecast-empty-icon">📉</span>
+                <p>Pas assez d'historique pour prédire la demande de ces plats.</p>
+              </div>
+            } @else {
+
+              <div class="forecast-list">
+                @for (item of f.items; track item.menu_item_id) {
+                  <div class="forecast-row">
+                    <span class="forecast-name">{{ item.menu_item_name }}</span>
+                    <div class="forecast-bar-track">
+                      <div class="forecast-bar" [style.width]="barWidth(item.predicted_quantity)"></div>
+                    </div>
+                    <span class="forecast-qty">{{ item.predicted_quantity }}</span>
+                  </div>
+                }
+              </div>
+
+            }
+
+          }
+
+        }
+      </section>
+
+    </div>
+
+  }
+
+}

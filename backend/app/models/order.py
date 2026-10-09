@@ -12,7 +12,7 @@ class OrderStatus(str, enum.Enum):
     IN_PREPARATION = "IN_PREPARATION"
     READY = "READY"
     SERVED = "SERVED"
-
+    CANCELLED = "CANCELLED"
 
 class Order(Base):
     __tablename__ = "orders"

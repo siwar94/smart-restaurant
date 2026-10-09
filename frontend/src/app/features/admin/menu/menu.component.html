@@ -1,0 +1,84 @@
+<div class="page-header">
+  <div>
+    <h1>Menu</h1>
+    <p class="page-subtitle">Catégories et plats proposés aux clients</p>
+  </div>
+</div>
+
+<section class="card section-block">
+  <h2>📂 Catégories</h2>
+  <form [formGroup]="categoryForm" (ngSubmit)="addCategory()" class="inline-form">
+    <input placeholder="Nom de la catégorie" formControlName="name" />
+    <button type="submit" class="btn btn-primary" [disabled]="categoryForm.invalid">
+      <span>➕</span> Ajouter
+    </button>
+  </form>
+
+  @if (categories().length === 0) {
+  <p class="empty-hint">Aucune catégorie pour l'instant.</p>
+} @else {
+  <div class="chip-list">
+    @for (cat of categories(); track cat.id) {
+      <span class="chip chip-removable">
+        {{ cat.name }}
+        <button type="button" class="chip-remove" (click)="deleteCategory(cat)" title="Supprimer la catégorie">✕</button>
+      </span>
+    }
+  </div>
+}
+</section>
+
+<section class="section-block">
+  <h2>🍕 Plats</h2>
+  <form [formGroup]="itemForm" (ngSubmit)="addItem()" class="card inline-form wrap">
+    <input placeholder="Nom" formControlName="name" />
+    <input placeholder="Description" formControlName="description" />
+    <input type="number" placeholder="Prix" formControlName="price" step="0.01" />
+    <select formControlName="category_id">
+      <option [ngValue]="null">Sans catégorie</option>
+      @for (cat of categories(); track cat.id) { <option [ngValue]="cat.id">{{ cat.name }}</option> }
+    </select>
+    <button type="submit" class="btn btn-primary" [disabled]="itemForm.invalid">
+      <span>➕</span> Ajouter le plat
+    </button>
+  </form>
+
+  @if (items().length === 0) {
+
+    <div class="empty-state">
+      <span class="empty-icon">🍽️</span>
+      <p>Aucun plat enregistré pour l'instant.</p>
+    </div>
+
+  } @else {
+
+    <table>
+      <thead>
+        <tr><th>Nom</th><th>Prix</th><th>Catégorie</th><th>Disponible</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track item.id) {
+          <tr [class.is-unavailable]="!item.available">
+            <td class="item-name">{{ item.name }}</td>
+            <td>{{ item.price | number:'1.2-2' }} DT</td>
+            <td>
+              @if (item.category) {
+                <span class="chip chip-sm">{{ item.category.name }}</span>
+              } @else {
+                <span class="muted">—</span>
+              }
+            </td>
+            <td>
+              <label class="switch">
+                <input type="checkbox" [checked]="item.available" (change)="toggleAvailability(item)" />
+                <span class="slider"></span>
+              </label>
+            </td>
+            <td><button class="btn btn-danger" (click)="deleteItem(item.id)">Supprimer</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+  }
+</section>

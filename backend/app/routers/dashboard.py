@@ -6,7 +6,7 @@ from app.core.deps import require_role
 from app.models.user import User, UserRole
 from app.schemas.dashboard import DashboardOut
 from app.services import dashboard_service
-from app.schemas.dashboard import DashboardOut, DashboardSummary
+from app.schemas.dashboard import DashboardOut, DashboardSummary, AnalyticsOut
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
@@ -31,3 +31,16 @@ def get_summary_only(
     current_user: User = Depends(require_role(UserRole.ADMIN)),
 ):
     return dashboard_service.get_summary(db)
+
+
+
+@router.get("/analytics", response_model=AnalyticsOut)
+def get_analytics(
+    days: int = 14,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.ADMIN)),
+):
+    return AnalyticsOut(
+        orders_by_day=dashboard_service.get_orders_by_day(db, days=days),
+        peak_hours=dashboard_service.get_peak_hours(db),
+    )

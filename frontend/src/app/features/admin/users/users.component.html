@@ -1,0 +1,64 @@
+<div class="page-header">
+  <div>
+    <h1>Utilisateurs</h1>
+    <p class="page-subtitle">Gestion des comptes Admin, Serveur et Cuisine</p>
+  </div>
+  <button class="btn btn-primary" (click)="toggleForm()">
+    {{ showForm() ? 'Annuler' : '➕ Nouvel utilisateur' }}
+  </button>
+</div>
+
+@if (showForm()) {
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="card inline-form wrap">
+    <input placeholder="Nom" formControlName="name" />
+    <input placeholder="Email" type="email" formControlName="email" />
+    <input placeholder="Mot de passe" type="password" formControlName="password" />
+    <select formControlName="role">
+      @for (r of roles; track r) { <option [value]="r">{{ r }}</option> }
+    </select>
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Créer</button>
+  </form>
+}
+
+@if (users().length === 0) {
+
+  <div class="empty-state">
+    <span class="empty-icon">👤</span>
+    <p>Aucun utilisateur enregistré.</p>
+  </div>
+
+} @else {
+
+  <table>
+    <thead>
+      <tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Statut</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (user of users(); track user.id) {
+        <tr [class.is-inactive]="user.is_active === false">
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">{{ initials(user.name) }}</div>
+              <span class="user-name">{{ user.name }}</span>
+            </div>
+          </td>
+          <td class="muted">{{ user.email }}</td>
+          <td><span class="badge badge-role">{{ user.role }}</span></td>
+          <td>
+            @if (user.is_active !== false) {
+              <span class="badge badge-active">Actif</span>
+            } @else {
+              <span class="badge badge-inactive">Désactivé</span>
+            }
+          </td>
+          <td>
+            @if (user.is_active) {
+              <button class="btn btn-danger" (click)="deactivate(user)">Désactiver</button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+}

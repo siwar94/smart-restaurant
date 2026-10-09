@@ -1,5 +1,6 @@
 from decimal import Decimal
 from typing import List, Optional
+from typing import List
 
 from pydantic import BaseModel
 
@@ -31,3 +32,18 @@ class DashboardOut(BaseModel):
     summary: DashboardSummary
     top_items: List[TopMenuItem]
     preparation: PreparationStats
+
+class OrdersByDayPoint(BaseModel):
+    date: str  # format ISO "2026-09-20"
+    orders_count: int
+    revenue: Decimal
+
+
+class PeakHourPoint(BaseModel):
+    hour: int  # 0-23
+    orders_count: int
+
+
+class AnalyticsOut(BaseModel):
+    orders_by_day: List[OrdersByDayPoint]
+    peak_hours: List[PeakHourPoint]

@@ -5,7 +5,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.models.menu_item import MenuItem
-from app.models.order import Order
+from app.models.order import Order, OrderStatus
 from app.models.order_item import OrderItem
 from app.schemas.order import OrderItemCreate
 
@@ -41,9 +41,10 @@ def compute_total(order_items: List[OrderItem]) -> Decimal:
 
 
 def ensure_order_editable(order: Order):
-    """RM03 / RM04 : modifiable uniquement avant l'envoi en cuisine."""
-    if order.sent_to_kitchen_at is not None:
+    """Modifiable tant que la cuisine n'a pas commencé la préparation —
+    que la commande ait été envoyée en cuisine ou non."""
+    if order.status != OrderStatus.NEW:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cette commande a déjà été envoyée en cuisine et ne peut plus être modifiée",
+            detail="Cette commande est déjà en préparation et ne peut plus être modifiée",
         )

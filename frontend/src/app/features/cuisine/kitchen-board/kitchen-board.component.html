@@ -1,0 +1,102 @@
+<div class="page-header">
+  <div>
+    <h1>Commandes cuisine</h1>
+    <p class="page-subtitle">Suivi en temps réel de la préparation</p>
+  </div>
+</div>
+
+<div class="board">
+
+  <section class="column">
+    <div class="column-header col-new">
+      <span class="column-title">🆕 Nouvelles</span>
+      <span class="count">{{ newOrders().length }}</span>
+    </div>
+    <div class="cards">
+      @for (order of newOrders(); track order.id) {
+        <div class="order-card" [class.urgent]="elapsedMinutes(order) >= 10">
+          <div class="order-header">
+            <span class="table-tag">🪑 Table {{ tableNumber(order.table_id) }}</span>
+            <span class="elapsed" [class.elapsed-urgent]="elapsedMinutes(order) >= 10">
+              ⏱️ {{ elapsedMinutes(order) }} min
+            </span>
+          </div>
+          <ul class="items-list">
+            @for (item of order.items; track item.id) {
+              <li><span class="item-qty">{{ item.quantity }}×</span> {{ item.menu_item_name }}</li>
+            }
+          </ul>
+          <button class="btn btn-primary" (click)="startPreparation(order)">
+            Commencer la préparation
+          </button>
+        </div>
+      } @empty {
+        <div class="empty-column">
+          <span class="empty-icon">✨</span>
+          <p>Aucune nouvelle commande.</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="column">
+    <div class="column-header col-prep">
+      <span class="column-title">🔥 En préparation</span>
+      <span class="count">{{ inPrepOrders().length }}</span>
+    </div>
+    <div class="cards">
+      @for (order of inPrepOrders(); track order.id) {
+        <div class="order-card prep" [class.urgent]="elapsedMinutes(order) >= 15">
+          <div class="order-header">
+            <span class="table-tag">🪑 Table {{ tableNumber(order.table_id) }}</span>
+            <span class="elapsed" [class.elapsed-urgent]="elapsedMinutes(order) >= 15">
+              ⏱️ {{ elapsedMinutes(order) }} min
+            </span>
+          </div>
+          <ul class="items-list">
+            @for (item of order.items; track item.id) {
+              <li><span class="item-qty">{{ item.quantity }}×</span> {{ item.menu_item_name }}</li>
+            }
+          </ul>
+          <button class="btn btn-primary" (click)="markReady(order)">
+            Marquer prête
+          </button>
+        </div>
+      } @empty {
+        <div class="empty-column">
+          <span class="empty-icon">👨‍🍳</span>
+          <p>Rien en préparation.</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="column">
+    <div class="column-header col-ready">
+      <span class="column-title">✅ Prêtes</span>
+      <span class="count">{{ readyOrders().length }}</span>
+    </div>
+    <div class="cards">
+      @for (order of readyOrders(); track order.id) {
+        <div class="order-card ready">
+          <div class="order-header">
+            <span class="table-tag">🪑 Table {{ tableNumber(order.table_id) }}</span>
+            <span class="elapsed">⏱️ {{ elapsedMinutes(order) }} min</span>
+          </div>
+          <ul class="items-list">
+            @for (item of order.items; track item.id) {
+              <li><span class="item-qty">{{ item.quantity }}×</span> {{ item.menu_item_name }}</li>
+            }
+          </ul>
+          <span class="badge badge-order-ready">En attente du serveur</span>
+        </div>
+      } @empty {
+        <div class="empty-column">
+          <span class="empty-icon">🍽️</span>
+          <p>Aucune commande prête.</p>
+        </div>
+      }
+    </div>
+  </section>
+
+</div>

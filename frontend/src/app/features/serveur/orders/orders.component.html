@@ -1,0 +1,25 @@
+<div class="page-header">
+  <h1>Mes commandes</h1>
+</div>
+
+<div class="orders-list">
+  @for (order of orders(); track order.id) {
+    <a class="order-card" [routerLink]="['/serveur/orders', order.id]">
+      <div class="order-main">
+        <span class="table-tag">🪑 Table {{ tableNumber(order.table_id) }}</span>
+        <span class="order-total">{{ order.total | number:'1.2-2' }} DT</span>
+      </div>
+      <div class="order-meta">
+        <span class="badge" [class]="statusClass(order.status)">{{ statusLabel(order.status) }}</span>
+        @if (order.status === 'READY') {
+          <button class="btn btn-primary" (click)="markServed(order, $event)">Marquer servie</button>
+        }
+      </div>
+    </a>
+  } @empty {
+    <div class="empty-state">
+      <span class="empty-icon">🧾</span>
+      <p>Aucune commande pour le moment.</p>
+    </div>
+  }
+</div>

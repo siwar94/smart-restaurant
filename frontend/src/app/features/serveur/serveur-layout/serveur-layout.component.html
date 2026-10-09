@@ -1,0 +1,55 @@
+<div class="app-shell">
+  <aside class="app-sidebar" [class.is-open]="sidebarOpen">
+    <div class="sidebar-brand">
+      <div class="brand-mark">🍽️</div>
+      <div class="brand-copy">
+        <strong>Smart Restaurant</strong>
+        <small>Espace Serveur</small>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-group">
+        <span class="sidebar-section-label">Service</span>
+        <div class="sidebar-link-list">
+          <a routerLink="/serveur/tables" routerLinkActive="is-active" class="sidebar-link" (click)="sidebarOpen = false">
+            <span class="icon">🪑</span><span>Tables</span>
+          </a>
+          <a routerLink="/serveur/orders" routerLinkActive="is-active" class="sidebar-link" (click)="sidebarOpen = false">
+            <span class="icon">🧾</span><span>Mes commandes</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar">SV</div>
+      <div class="sidebar-user-copy">
+        <strong>Serveur</strong>
+        <small>Connecté</small>
+      </div>
+    </div>
+  </aside>
+
+  @if (sidebarOpen) {
+    <button class="sidebar-scrim" (click)="sidebarOpen = false"></button>
+  }
+
+  <div class="app-main">
+    <header class="app-topbar">
+      <div class="topbar-leading">
+        <button class="mobile-menu-button btn btn-ghost" (click)="sidebarOpen = true">☰</button>
+        <span class="topbar-title">Service en salle</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" (click)="logout()">Déconnexion</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <app-toast />
+</div>

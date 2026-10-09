@@ -1,0 +1,48 @@
+<div class="page-header">
+  <div>
+    <h1>Tables</h1>
+    <p class="page-subtitle">Gestion des tables du restaurant</p>
+  </div>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="card inline-form">
+  <input type="number" placeholder="Numéro de table" formControlName="number" />
+  <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+    <span>➕</span> Ajouter une table
+  </button>
+</form>
+
+@if (loading()) {
+
+  <div class="dash-loading">
+    <div class="spinner"></div>
+    <p>Chargement des tables...</p>
+  </div>
+
+} @else {
+
+  @if (tables().length === 0) {
+
+    <div class="empty-state">
+      <span class="empty-icon">🪑</span>
+      <p>Aucune table enregistrée pour l'instant.</p>
+    </div>
+
+  } @else {
+
+    <div class="table-grid">
+      @for (table of tables(); track table.id) {
+        <div class="table-card" [class.is-occupied]="table.status === 'OCCUPIED'">
+          <div class="table-icon">🪑</div>
+          <span class="table-number">Table {{ table.number }}</span>
+          <span class="badge" [class.badge-free]="table.status === 'FREE'" [class.badge-occupied]="table.status === 'OCCUPIED'">
+            {{ table.status === 'FREE' ? 'Libre' : 'Occupée' }}
+          </span>
+          <button class="btn btn-danger" (click)="deleteTable(table.id)">Supprimer</button>
+        </div>
+      }
+    </div>
+
+  }
+
+}

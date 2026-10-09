@@ -3,9 +3,17 @@ from sqlalchemy import text
 
 from app.database.session import engine
 from app import models
-from app.routers import auth, users, tables, categories, menu_items, orders, dashboard
+from app.routers import auth, users, tables, categories, menu_items, orders, dashboard, ws, ai
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Smart Restaurant Order System API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth.router)
 app.include_router(users.router)
@@ -14,6 +22,8 @@ app.include_router(categories.router)
 app.include_router(menu_items.router)
 app.include_router(orders.router)
 app.include_router(dashboard.router)
+app.include_router(ws.router)
+app.include_router(ai.router)
 
 
 @app.get("/")

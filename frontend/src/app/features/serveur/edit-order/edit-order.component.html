@@ -1,0 +1,71 @@
+<a [routerLink]="['/serveur/orders', orderId]" class="back-link">← Retour à la commande</a>
+
+@if (loading()) {
+
+  <div class="dash-loading">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+} @else {
+
+  <div class="page-header">
+    <h1>Modifier la commande — Table {{ tableId() }}</h1>
+  </div>
+
+  <div class="order-layout">
+    <div class="menu-panel">
+      @for (cat of categories(); track cat.id) {
+        @if (itemsForCategory(cat.id).length > 0) {
+          <section class="category-block">
+            <h2>{{ cat.name }}</h2>
+            <div class="item-grid">
+              @for (item of itemsForCategory(cat.id); track item.id) {
+                <div class="menu-item-card">
+                  <div class="item-info">
+                    <span class="item-name">{{ item.name }}</span>
+                    <span class="item-price">{{ item.price | number:'1.2-2' }} DT</span>
+                  </div>
+                  <div class="qty-control">
+                    <button class="btn btn-ghost" (click)="remove(item)" [disabled]="quantityOf(item.id) === 0">−</button>
+                    <span class="qty-value">{{ quantityOf(item.id) }}</span>
+                    <button class="btn btn-ghost" (click)="add(item)">+</button>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      }
+    </div>
+
+    <aside class="cart-panel card">
+      <h2>Commande</h2>
+
+      @if (cart().size === 0) {
+        <div class="cart-empty">
+          <span class="cart-empty-icon">🛒</span>
+          <p>Aucun article — ajoute au moins un plat.</p>
+        </div>
+      } @else {
+        <ul class="cart-list">
+          @for (line of cart().values(); track line.item.id) {
+            <li>
+              <span>{{ line.quantity }} × {{ line.item.name }}</span>
+              <span>{{ line.item.price * line.quantity | number:'1.2-2' }} DT</span>
+            </li>
+          }
+        </ul>
+      }
+
+      <div class="cart-total">
+        <span>Total</span>
+        <span>{{ total() | number:'1.2-2' }} DT</span>
+      </div>
+
+      <button class="btn btn-primary send-btn" [disabled]="cart().size === 0 || submitting()" (click)="saveChanges()">
+        {{ submitting() ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+      </button>
+    </aside>
+  </div>
+}

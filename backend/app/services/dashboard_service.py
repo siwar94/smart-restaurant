@@ -1,9 +1,18 @@
 from datetime import datetime, time, timezone
 from decimal import Decimal
 from typing import List
+from app.schemas.dashboard import (
+    DashboardSummary,
+    TopMenuItem,
+    PreparationStats,
+    OrdersByDayPoint,
+    PeakHourPoint,
+)
 
 from sqlalchemy import func, case
 from sqlalchemy.orm import Session
+from datetime import timedelta
+from sqlalchemy import case
 
 from app.models.order import Order, OrderStatus
 from app.models.order_item import OrderItem
@@ -138,3 +147,58 @@ def get_preparation_stats(db: Session) -> PreparationStats:
         average_total_seconds=float(result.avg_total) if result.avg_total is not None else None,
         orders_measured=result.measured or 0,
     )
+
+
+def get_orders_by_day(db: Session, days: int = 14) -> List[OrdersByDayPoint]:
+    """Historique des commandes et du CA jour par jour, sur les `days` derniers jours
+    (jours sans commande inclus avec des valeurs à zéro)."""
+    end_date = datetime.now(timezone.utc).date()
+    start_date = end_date - timedelta(days=days - 1)
+
+    rows = (
+        db.query(
+            func.date(Order.created_at).label("day"),
+            func.count(Order.id).label("orders_count"),
+            func.coalesce(
+                func.sum(case((Order.status == OrderStatus.SERVED, Order.total), else_=0)),
+                0,
+            ).label("revenue"),
+        )
+        .filter(func.date(Order.created_at) >= start_date)
+        .group_by(func.date(Order.created_at))
+        .all()
+    )
+
+    by_day = {row.day: row for row in rows}
+
+    result = []
+    current = start_date
+    while current <= end_date:
+        row = by_day.get(current)
+        result.append(
+            OrdersByDayPoint(
+                date=current.isoformat(),
+                orders_count=int(row.orders_count) if row else 0,
+                revenue=Decimal(row.revenue) if row else Decimal("0"),
+            )
+        )
+        current += timedelta(days=1)
+
+    return result
+
+
+def get_peak_hours(db: Session) -> List[PeakHourPoint]:
+    """Répartition du nombre de commandes par heure de la journée (0-23),
+    toutes dates confondues, pour repérer les heures de pointe."""
+    rows = (
+        db.query(
+            func.extract("hour", Order.created_at).label("hour"),
+            func.count(Order.id).label("orders_count"),
+        )
+        .group_by(func.extract("hour", Order.created_at))
+        .all()
+    )
+
+    by_hour = {int(row.hour): int(row.orders_count) for row in rows}
+
+    return [PeakHourPoint(hour=h, orders_count=by_hour.get(h, 0)) for h in range(24)]
